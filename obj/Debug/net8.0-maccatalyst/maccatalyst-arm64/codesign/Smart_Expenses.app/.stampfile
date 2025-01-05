@@ -1,0 +1,1 @@
+-v --force --timestamp=none --sign - --entitlements /Users/aakritibliss/RiderProjects/Smart_Expenses/obj/Debug/net8.0-maccatalyst/maccatalyst-arm64/Entitlements.xcent /Users/aakritibliss/RiderProjects/Smart_Expenses/bin/Debug/net8.0-maccatalyst/maccatalyst-arm64/Smart_Expenses.app

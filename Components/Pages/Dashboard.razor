@@ -1,0 +1,349 @@
+@page "/dashboard"
+
+<style>
+    .dashboard-card {
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+
+    .chart-container {
+        height: 300px;
+    }
+    .inflows {
+        background-color: #4caf50; /* Green for inflows */
+    }
+
+    .outflows {
+        background-color: #f44336; /* Red for outflows */
+    }
+
+    .debt {
+        background-color: #ff9800; /* Orange for debt */
+    }
+
+    .remaining-debt {
+        background-color: #2196f3; /* Blue for remaining debt */
+    }
+
+    .cleared-debt {
+        background-color: #9c27b0; /* Purple for cleared debt */
+    }
+
+    .total-transactions {
+        background-color: #607d8b; /* Grey for total transactions */
+    .modal-backdrop {
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+    .btn-primary {
+        background-color: #1976d2; 
+        border: none;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background-color: #E6E6FA;
+    }
+
+    .btn-secondary {
+        background-color: #9e9e9e; 
+        border: none;
+        color: white;
+    }
+
+    .btn-secondary:hover {
+        background-color: #6c6c6c; 
+    }
+    }
+</style>
+
+<div class="d-flex justify-content-end mt-3">
+    <button class="btn btn-primary me-2" @onclick="OpenModal">Add Transaction</button>
+    <button class="btn btn-secondary" @onclick="ClearDebt">Clear Debt</button>
+</div>
+<div class="col-md-4">
+    <div class="dashboard-card bg-light text-dark">
+        <h5>Remaining Debt</h5>
+        <h3>Rs. @remainingDebt.ToString("0.00")</h3>
+    </div>
+</div>
+
+<div class="col-md-4">
+    <input type="text" class="form-control" placeholder="Search by title" @bind="searchQuery" />
+</div>
+
+<div class="container mt-4">
+    <div class="welcome-section text-center">
+        <h3 style="color:deeppink">Welcome, Aakriti</h3>
+        <p>Your Balance: <strong>Rs. @balance.ToString("0.00")</strong></p>
+        <p>Total Transactions: <strong>@totalTransactionCount</strong></p>
+        <p>Total Transactions Value: <strong>Rs. @totalTransactionValue.ToString("0.00")</strong></p>
+
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="dashboard-card bg-light text-dark">
+                <h5>Total Inflows</h5>
+                <h3>Rs. @totalInflows.ToString("0.00")</h3>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="dashboard-card bg-light text-dark">
+                <h5>Total Outflows</h5>
+                <h3>Rs. @totalOutflows.ToString("0.00")</h3>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="dashboard-card bg-light text-dark">
+                <h5>Total Debt</h5>
+                <h3>Rs. @totalDebt.ToString("0.00")</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-3">
+        <div class="col-md-6">
+            <div class="dashboard-card bg-light text-dark">
+                <h5>Cleared Debt</h5>
+                <h3>Rs. @clearedDebt.ToString("0.00")</h3>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="dashboard-card bg-light text-dark">
+                <h5>Remaining Debt</h5>
+                <h3>Rs. @remainingDebt.ToString("0.00")</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-4">
+            <input type="text" class="form-control" placeholder="Search by title" @bind="searchQuery" />
+        </div>
+        <div class="col-md-4">
+            <select class="form-control" @bind="filterType">
+                <option value="">Filter by Type</option>
+                <option value="Inflows">Inflows</option>
+                <option value="Outflows">Outflows</option>
+                <option value="Debt">Debt</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <select class="form-control" @bind="tagsInput">
+                <option value="">Select a Tag</option>
+                <option value="Salary">Salary</option>
+                <option value="Rent">Rent</option>
+                <option value="Food">Food</option>
+                <option value="Others">Others</option>
+            </select>
+        </div>
+
+        <div class="col-md-4">
+            <input type="date" class="form-control" @bind="filterDateRange" />
+        </div>
+    </div>
+
+    <div class="row mt-3">
+        <div class="col-md-12">
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th @onclick="SortByDate">Date</th>
+                    <th>Title</th>
+                    <th>Type</th>
+                    <th>Category</th>
+                    <th>Amount</th>
+                    <th>Tags</th>
+                    <th>Note</th>
+                </tr>
+                </thead>
+                <tbody>
+                    @foreach (var transaction in FilteredTransactions)
+                    {
+                        <tr>
+                            <td>@transaction.Date.ToShortDateString()</td>
+                            <td>@transaction.Title</td>
+                            <td>@transaction.Type</td>
+                            <td>@transaction.Category</td>
+                            <td>Rs. @transaction.Amount.ToString("0.00")</td>
+                            <td>@string.Join(", ", transaction.Tags)</td>
+                            <td>@transaction.Note</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Add Transaction Modal -->
+    @if (showModal)
+    {
+        <div class="modal fade show d-block" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Add Transaction</h5>
+                        <button type="button" class="btn-close" @onclick="CloseModal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label>Title</label>
+                            <input type="text" class="form-control" @bind="newTransaction.Title" />
+                        </div>
+                        <div class="mb-3">
+                            <label>Type</label>
+                            <select class="form-control" @bind="newTransaction.Type">
+                                <option value=""></option>
+                                <option value="Inflows">Inflows</option>
+                                <option value="Outflows">Outflows</option>
+                                <option value="Debt">Debt</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label>Category</label>
+                            <input type="text" class="form-control" @bind="newTransaction.Category" />
+                        </div>
+                        <div class="mb-3">
+                            <label>Amount</label>
+                            <input type="number" class="form-control" @bind="newTransaction.Amount" />
+                        </div>
+                        <div class="mb-3">
+                            <label>Tags</label>
+                            <input type="text" class="form-control" placeholder="Comma-separated" @bind="tagsInput" />
+                        </div>
+                        <div class="mb-3">
+                            <label>Note</label>
+                            <textarea class="form-control" @bind="newTransaction.Note"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" @onclick="CloseModal">Close</button>
+                        <button type="button" class="btn btn-primary" @onclick="AddTransaction">Add</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-backdrop fade show"></div>
+    }
+</div>
+
+@code {
+    private class Transaction
+    {
+        public DateTime Date { get; set; } = DateTime.Now;
+        public string Title { get; set; }
+        public string Type { get; set; }
+        public string Category { get; set; }
+        public decimal Amount { get; set; }
+        public List<string> Tags { get; set; } = new();
+        public string Note { get; set; }
+    }
+
+    private string transactionsJson = "[]"; // JSON string for transactions
+    private List<Transaction> Transactions => JsonSerializer.Deserialize<List<Transaction>>(transactionsJson) ?? new();
+    private List<Transaction> FilteredTransactions => ApplyFilters();
+    private int totalTransactionCount => Transactions.Count;
+    private decimal totalTransactionValue => totalInflows + totalDebt - totalOutflows;
+
+    private decimal totalInflows;
+    private decimal totalOutflows;
+    private decimal totalDebt;
+    private decimal clearedDebt;
+    private decimal remainingDebt => totalDebt - clearedDebt;
+    private decimal balance => totalInflows + totalDebt - totalOutflows;
+    private bool showModal = false;
+    private Transaction newTransaction = new();
+    private string tagsInput = string.Empty;
+    private string filterType = string.Empty;
+    private string searchQuery = string.Empty;
+    private DateTime? filterDateRange;
+
+    private void OpenModal() => showModal = true;
+
+    private void CloseModal()
+    {
+        newTransaction = new();
+        tagsInput = string.Empty;
+        showModal = false;
+    }
+
+    private void AddTransaction()
+    {
+        if (newTransaction.Amount <= 0) return;
+
+        if (!string.IsNullOrEmpty(tagsInput))
+        {
+            newTransaction.Tags = tagsInput.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                .Select(t => t.Trim())
+                .ToList();
+        }
+
+        var transactions = Transactions;
+        transactions.Add(newTransaction);
+        transactionsJson = JsonSerializer.Serialize(transactions);
+
+        switch (newTransaction.Type)
+        {
+            case "Inflows":
+                totalInflows += newTransaction.Amount;
+                break;
+            case "Outflows":
+                totalOutflows += newTransaction.Amount;
+                break;
+            case "Debt":
+                totalDebt += newTransaction.Amount;
+                break;
+        }
+
+        StateHasChanged();
+        CloseModal();
+    }
+
+    private void ClearDebt()
+    {
+        if (remainingDebt > 0 && balance > 0)
+        {
+            decimal amountToClear = Math.Min(balance, remainingDebt);
+            clearedDebt += amountToClear;
+        }
+
+        StateHasChanged();
+    }
+
+    private List<Transaction> ApplyFilters()
+    {
+        var filtered = Transactions.AsQueryable();
+
+        if (!string.IsNullOrEmpty(filterType))
+        {
+            filtered = filtered.Where(t => t.Type == filterType);
+        }
+
+        if (filterDateRange.HasValue)
+        {
+            filtered = filtered.Where(t => t.Date.Date == filterDateRange.Value.Date);
+        }
+
+        if (!string.IsNullOrEmpty(searchQuery))
+        {
+            filtered = filtered.Where(t => t.Title.Contains(searchQuery, StringComparison.OrdinalIgnoreCase));
+        }
+
+        if (!string.IsNullOrEmpty(tagsInput))
+        {
+            var tagList = tagsInput.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(t => t.Trim()).ToList();
+            filtered = filtered.Where(t => t.Tags.Any(tag => tagList.Contains(tag)));
+        }
+
+        return filtered.ToList();
+    }
+
+    private void SortByDate()
+    {
+        var transactions = Transactions.OrderBy(t => t.Date).ToList();
+        transactionsJson = JsonSerializer.Serialize(transactions);
+        StateHasChanged();
+    }
+}

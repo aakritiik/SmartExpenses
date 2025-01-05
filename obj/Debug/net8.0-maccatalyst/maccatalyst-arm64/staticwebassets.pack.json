@@ -1,0 +1,45 @@
+{
+  "Files": [
+    {
+      "Id": "/Users/aakritibliss/RiderProjects/Smart_Expenses/obj/Debug/net8.0-maccatalyst/maccatalyst-arm64/scopedcss/bundle/Smart_Expenses.styles.css",
+      "PackagePath": "staticwebassets/Smart_Expenses.styles.css"
+    },
+    {
+      "Id": "/Users/aakritibliss/RiderProjects/Smart_Expenses/wwwroot/css/app.css",
+      "PackagePath": "staticwebassets/css/app.css"
+    },
+    {
+      "Id": "/Users/aakritibliss/RiderProjects/Smart_Expenses/wwwroot/css/bootstrap/bootstrap.min.css",
+      "PackagePath": "staticwebassets/css/bootstrap/bootstrap.min.css"
+    },
+    {
+      "Id": "/Users/aakritibliss/RiderProjects/Smart_Expenses/wwwroot/css/bootstrap/bootstrap.min.css.map",
+      "PackagePath": "staticwebassets/css/bootstrap/bootstrap.min.css.map"
+    },
+    {
+      "Id": "/Users/aakritibliss/RiderProjects/Smart_Expenses/wwwroot/favicon.png",
+      "PackagePath": "staticwebassets/favicon.png"
+    },
+    {
+      "Id": "/Users/aakritibliss/RiderProjects/Smart_Expenses/wwwroot/index.html",
+      "PackagePath": "staticwebassets/index.html"
+    },
+    {
+      "Id": "obj/Debug/net8.0-maccatalyst/maccatalyst-arm64/staticwebassets/msbuild.Smart_Expenses.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj/Debug/net8.0-maccatalyst/maccatalyst-arm64/staticwebassets/msbuild.build.Smart_Expenses.props",
+      "PackagePath": "build\\Smart_Expenses.props"
+    },
+    {
+      "Id": "obj/Debug/net8.0-maccatalyst/maccatalyst-arm64/staticwebassets/msbuild.buildMultiTargeting.Smart_Expenses.props",
+      "PackagePath": "buildMultiTargeting\\Smart_Expenses.props"
+    },
+    {
+      "Id": "obj/Debug/net8.0-maccatalyst/maccatalyst-arm64/staticwebassets/msbuild.buildTransitive.Smart_Expenses.props",
+      "PackagePath": "buildTransitive\\Smart_Expenses.props"
+    }
+  ],
+  "ElementsToRemove": []
+}
